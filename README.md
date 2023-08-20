@@ -1,6 +1,8 @@
 # DesafiodeProjeto_Otimizando-o-Sistema-Bancario-com-Funcoes-Python
 Otimizando o "Desafio de Projeto -  Criando um sistema bancário".  Agora utilizando funções e dicionários, e dando a oportunidade do usuário criar uma conta e logar nela.
 
+<br>
+
 ## 📦 Transformar as Operações de Depósito, Saque e Extrato em funções. <br>
 ###  O que modela o código, melhorando sua manutenibilidade. 
 
