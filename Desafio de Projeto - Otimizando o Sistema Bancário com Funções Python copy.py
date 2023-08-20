@@ -1,17 +1,3 @@
-# Criar duas novas funções: cadastrar usuário (cliente) e cadastrar conta bancária (vinculando com o usuário)
-# Separar saque, depósito e extrato em funções
-# A função de saque deve receber argumentos apenas por nome. Sugestão de argumentos: saldo, valor, extrato, limite, numero_saques, limite_saques. Sugestão de retorno: saldo e extrato
-# A função de depósito deve receber argumentos apenas por posição. Sugestão de argumentos: saldo, valor, extrato. De retorno: saldo, extrato
-# A função de extrato deve receber argumentos apenas por posição e nome (Argumentos posicionais: saldo, Argumentos nomeados: extrato)
-# O programa deve armazenar os usuários em uma lista. Um usuário é composto por: nome, data de nascimento, cpf e endereço
-# O endereço é uma stting com o formato: logradouro, nº - bairro - cidade/sigla estado
-# Deve ser armazenado somento os números do CPF
-# Não se pode cadastrar 2 usuários com o mesmo CPF
-# O programa deve armazenar contas em uma lista. Uma conta é composta por: agência, número da conta e usuário
-# Um usuário pode ter mais de uma conta, mais uma conta pertence somente a um usuário
-# O número da agência é fixo: 0001
-# O número da conta é sequencial, iniciando em 1
-
 extrato_saldo = [float(), float(), float()]
 saldo = float()
 numero_saques = int()
@@ -63,6 +49,7 @@ def fazer_cadastro():
     
     else:
         print("Você já está cadastrado!!!")
+
 def criar_conta():
     global contador_contas
     contador_contas += 1
