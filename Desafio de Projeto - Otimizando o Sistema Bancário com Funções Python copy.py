@@ -1,21 +1,86 @@
-extrato_saldo = [float(), float(), float()]
-saldo = float()
-numero_saques = int()
-limite_saques= 3
-Acesso = 0
-usuario = int()
-menu = """Escolha uma opção:
-    1 - Depositar
-    2 - Sacar
-    3 - Visualizar extrato
-    0 - Sair/Finalizar
-"""  
-usuarios = {}
-contador_contas = int()
-conta = {"Número da conta": contador_contas, "Agência": "0001"}
-contas = {usuario: {}}
+def main():
+    extrato_saldo = [float(), float(), float()]
+    saldo = float()
+    numero_saques = int()
+    limite_saques= 3
+    Acesso = int()
+    usuario = int()
+    menu = """Escolha uma opção:
+        1 - Depositar
+        2 - Sacar
+        3 - Visualizar extrato
+        0 - Sair/Finalizar
+    """  
+    limite = 500
+    usuarios = {}
+    
+    while True:
+        opcao_cadastro = int(input("""
+        Bem-vindo(a) ao nosso banco!!!
+        
+        |Digite - 1| = Se já tem um cadastro e deseja fazer login.
+        |Digite - 2| = Se ainda não tem um e gostaria de fazer o cadastro.
+        |Digite - 0| = Se gostaria de sair.
+        """))
 
-def fazer_cadastro():
+        if opcao_cadastro == 1:
+            Acesso = autenticar(usuarios)
+
+        elif opcao_cadastro == 2:
+            fazer_cadastro(usuarios, usuario)
+            print(usuarios)
+
+        if (opcao_cadastro == 0) or (Acesso == 1):
+            break
+            
+    Acesso = 1
+    if Acesso == 1:
+        opcao_operacao = int(input("""
+        |Digite - 1| = Se gostaria de fazer uma operação
+        |Digite - 2| = Se gostaria de criar uma nova conta
+        |Digite - 0| = Se gostaria de sair.
+                                
+    """))
+
+        if opcao_operacao == 1:
+            while True:
+                opcao = int(input(menu))
+
+                if opcao == 1:
+                    valor = float(input("Qual o valor a ser depositado?\n"))
+                    extrato_deposito = float()
+                    extrato_deposito, saldo = deposito(saldo, valor, extrato_deposito)
+
+                elif opcao == 2:
+                    while True:
+                        valor = float(input("Qual o valor a sar sacado?\n"))
+                        saldo, numero_saques =saque(valor=valor, limite=limite, extrato_saldo=extrato_saldo, saldo=saldo, numero_saques=numero_saques, limite_saques=limite_saques)
+                        print(f"Seu saldo é de R$ {float(saldo):.2f}")
+
+                        if numero_saques >= limite_saques:
+                            break
+                        
+                        print("Gostaria de fazer outro saque?\n")
+                        print("     | 0 - NÃO |\n")
+                        outro_saque = int(input("     | 1 - SIM |\n"))
+
+                        if outro_saque == 0:
+                            break
+
+                elif opcao == 3:
+                    print("===========EXTRATO===========\n")
+                    vizualizar_extrato(saldo, numero_saques, extrato_deposito = extrato_deposito, extrato_saldo = extrato_saldo)
+
+                else:
+                    break 
+
+        elif opcao_operacao == 2:
+            criar_conta(usuario)
+            print("Conta criada!!!")
+
+    print("Obrigado por usar nosso serviço!!!")
+
+def fazer_cadastro(usuarios, usuario):
     CPF = int(input("Qual o seu CPF (Apenas os números)?\n"))
     if CPF not in usuarios:  
         valores = {}
@@ -45,42 +110,50 @@ def fazer_cadastro():
         usuario = {}
         usuario[CPF] = valores
         usuarios.update(usuario)
-        print(usuarios)
     
     else:
         print("Você já está cadastrado!!!")
 
-def criar_conta():
-    global contador_contas
+    return CPF
+
+def criar_conta(usuario):
+    contador_contas = int()
+    conta = {"Número da conta": contador_contas, "Agência": "0001"}
     contador_contas += 1
     conta["Número da conta"] = contador_contas
+    contas = {usuario: {}}
     contas[usuario] = conta
 
-def autenticar():
-    global Acesso
-    usuario = int(input("Insira o seu CPF (Apenas os números) "))
+def autenticar(usuarios):
+    Acesso_concedido = 0
+    username = int(input("Insira o seu CPF (Apenas os números) "))
     senha = int(input("insira uma senha "))
-    true_key = int(usuarios.get(usuario, {}).get("Senha"))
- 
-    if true_key == senha:
-        Acesso = 1
- 
-    else:
-        print("Usuário ou Senha Incorreta!!\n")
+    
+    if username in usuarios:
+        true_key = int(usuarios.get(username).get("Senha"))
+        print(true_key)
 
-def deposito(valor,extrato,/):
-    global saldo
- 
+        if true_key == senha:
+            Acesso_concedido = 1
+
+        else:
+            print("Senha Incorreta!!\n")
+
+    else: 
+        print("Usuário Incorreto ou não existe!!")
+
+    return Acesso_concedido
+
+def deposito(saldo, valor, extrato,/):
     if valor <= 0:
         print("Não se pode depositar valores iguais ou menores do que zero")
  
     else:
         saldo += valor
         extrato += valor
-        return float(extrato)
+        return extrato, saldo
     
-def saque(*,valor, limite):
-    global saldo, numero_saques, limite_saques
+def saque(*,saldo, numero_saques, limite_saques, valor, limite, extrato_saldo):
 
     if valor > saldo:
         print("O valor a ser sacado não pode ser maior do que o saldo!!!\n")
@@ -102,69 +175,12 @@ def saque(*,valor, limite):
     else:
         print(f"Apenas é permitido sacar {limite_saques} vezes por dia!!!\n")
 
-def vizualizar_extrato(saldo,/,*,extrato):
-    for cont_saldos in range(0,3,1):
-        print("saldo -",cont_saldos+1,":",extrato_saldo[cont_saldos],"\n")
-    print(f"O extrato do(s) depósito(s) é de: {extrato}\n")
+    return saldo, numero_saques  
+
+def vizualizar_extrato(saldo,numero_saques,/,*,extrato_deposito, extrato_saldo):
+    for cont_saldos in range(0,numero_saques,1):
+        print("saque -",cont_saldos+1,":",extrato_saldo[cont_saldos],"\n")
+    print(f"O extrato do(s) depósito(s) é de: {extrato_deposito}\n")
     print(f"O seu saldo atual é de {float(saldo):.2f}\n")
 
-opcao_cadastro = int(input("""
-    Bem-vindo(a) ao nosso banco!!!
-    
-    |Digite - 1| = Se já tem um cadastro e deseja fazer login.
-    |Digite - 2| = Se ainda não tem um e gostaria de fazer o cadastro.
-    |Digite - 0| = Se gostaria de sair.
-"""))
-
-if opcao_cadastro == 1:
-    autenticar()
-
-elif opcao_cadastro == 2:
-    fazer_cadastro()
-    print(usuarios)
-
-if Acesso == 1:
-    opcao_operacao = int(input("""
-    |Digite - 1| = Se gostaria de fazer uma operação
-    |Digite - 2| = Se gostaria de criar uma nova conta
-    |Digite - 0| = Se gostaria de sair.
-                            
-"""))
-
-    if opcao_operacao == 1:
-        while True:
-            opcao = int(input(menu))
-
-            if opcao == 1:
-                valor = float(input("Qual o valor a ser depositado?\n"))
-                extrato_deposito = float()
-                extrato_deposito = deposito(valor, extrato_deposito)
-
-            elif opcao == 2:
-                while True:
-                    valor = float(input("Qual o valor a sar sacado?\n"))
-                    saque(valor=valor,limite=500)
-                    print(f"Seu saldo é de R$ {float(saldo):.2f}")
-
-                    if numero_saques >= limite_saques:
-                        break
-                    
-                    print("Gostaria de fazer outro saque?\n")
-                    print("     | 0 - NÃO |\n")
-                    outro_saque = input("     | 1 - SIM |\n")
-
-                    if outro_saque == 0:
-                        break
-
-            elif opcao == 3:
-                print("===========EXTRATO===========\n")
-                vizualizar_extrato(saldo, extrato = extrato_deposito)
-
-            else:
-                break 
-
-    elif opcao_operacao == 2:
-        criar_conta()
-        print("Conta criada!!!")
-
-print("Obrigado por usar nosso serviço!!!")
+main()
